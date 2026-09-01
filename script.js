@@ -2,7 +2,7 @@ const form = document.getElementById("registrationForm");
 const message = document.getElementById("message");
 
 // PUT YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-const scriptURL = "https://script.google.com/macros/s/AKfycbwzzmGn4EI__0j8Wx03kQxOR6e8qh_kU76MGRM1admCh3BcyAUOw_xXmVAsinhG7czI2w/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbx0A7j5eOk-f5I6CCARwcs8_Nhno6pNwkiMsD8aA_ZY/dev";
 
 form.addEventListener("submit", function(event) {
     event.preventDefault();
