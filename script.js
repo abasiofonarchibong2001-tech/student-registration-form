@@ -1,149 +1,343 @@
 const form = document.getElementById("registrationForm");
 const message = document.getElementById("message");
 
-// PUT YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-const scriptURL = "https://script.google.com/macros/s/AKfycbx0A7j5eOk-f5I6CCARwcs8_Nhno6pNwkiMsD8aA_ZY/dev";
+// GOOGLE APPS SCRIPT WEB APP URL
+const scriptURL =
+    "https://script.google.com/macros/s/AKfycbx0A7j5eOk-f5I6CCARwcs8_Nhno6pNwkiMsD8aA_ZY/exec";
 
-form.addEventListener("submit", function(event) {
+
+form.addEventListener("submit", async function(event) {
+
     event.preventDefault();
 
-    // Get date of birth values
-    const day = Number(document.getElementById("day").value);
-    const month = Number(document.getElementById("month").value);
-    const year = Number(document.getElementById("year").value);
 
-    // Get password values
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
+    // --------------------------------
+    // GET FORM VALUES
+    // --------------------------------
 
-    // Check date of birth
-    const dateOfBirth = new Date(year, month - 1, day);
+    const day =
+        Number(document.getElementById("day").value);
+
+    const month =
+        Number(document.getElementById("month").value);
+
+    const year =
+        Number(document.getElementById("year").value);
+
+
+    const password =
+        document.getElementById("password").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+
+    const passport =
+        document.getElementById("passport").files[0];
+
+
+    // --------------------------------
+    // CHECK DATE OF BIRTH
+    // --------------------------------
+
+    const dateOfBirth =
+        new Date(year, month - 1, day);
+
 
     if (
         dateOfBirth.getFullYear() !== year ||
         dateOfBirth.getMonth() !== month - 1 ||
         dateOfBirth.getDate() !== day
     ) {
-        message.textContent = "Please select a valid date of birth.";
+
+        message.textContent =
+            "Please select a valid date of birth.";
+
         message.style.color = "red";
+
         return;
     }
 
-    // Prevent future date of birth
+
+    // --------------------------------
+    // PREVENT FUTURE DATE
+    // --------------------------------
+
     const today = new Date();
 
     if (dateOfBirth > today) {
-        message.textContent = "Date of birth cannot be in the future.";
+
+        message.textContent =
+            "Date of birth cannot be in the future.";
+
         message.style.color = "red";
+
         return;
     }
 
-    // Check passwords
+
+    // --------------------------------
+    // CHECK PASSWORDS
+    // --------------------------------
+
     if (password !== confirmPassword) {
-        message.textContent = "Passwords do not match.";
+
+        message.textContent =
+            "Passwords do not match.";
+
         message.style.color = "red";
+
         return;
     }
 
-    // Check terms
+
+    // --------------------------------
+    // CHECK TERMS
+    // --------------------------------
+
     if (!document.getElementById("terms").checked) {
-        message.textContent = "Please confirm that the information provided is correct.";
+
+        message.textContent =
+            "Please confirm that the information provided is correct.";
+
         message.style.color = "red";
+
         return;
     }
 
-    // Format date of birth
+
+    // --------------------------------
+    // CHECK PASSPORT
+    // --------------------------------
+
+    if (!passport) {
+
+        message.textContent =
+            "Please upload your passport photograph.";
+
+        message.style.color = "red";
+
+        return;
+    }
+
+
+    // Maximum passport size: 2MB
+    const maxSize = 2 * 1024 * 1024;
+
+    if (passport.size > maxSize) {
+
+        message.textContent =
+            "Passport photograph must not be larger than 2MB.";
+
+        message.style.color = "red";
+
+        return;
+    }
+
+
+    // Check file type
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+
+    if (!allowedTypes.includes(passport.type)) {
+
+        message.textContent =
+            "Please upload a JPG, PNG, or WEBP image.";
+
+        message.style.color = "red";
+
+        return;
+    }
+
+
+    // --------------------------------
+    // FORMAT DATE OF BIRTH
+    // --------------------------------
+
     const dateOfBirthText =
         String(day).padStart(2, "0") + "/" +
         String(month).padStart(2, "0") + "/" +
         year;
 
-    // Create data to send to Google Sheets
-    const formData = new FormData();
 
-    formData.append("fullname",
-        document.getElementById("fullname").value
-    );
+    // --------------------------------
+    // READ PASSPORT
+    // --------------------------------
 
-    formData.append("dateOfBirth", dateOfBirthText);
+    const reader = new FileReader();
 
-    formData.append("gender",
-        document.querySelector('input[name="gender"]:checked').value
-    );
 
-    formData.append("phone",
-        document.getElementById("phone").value
-    );
+    reader.onload = async function() {
 
-    formData.append("email",
-        document.getElementById("email").value
-    );
+        try {
 
-    formData.append("address",
-        document.getElementById("address").value
-    );
+            // --------------------------------
+            // CREATE DATA OBJECT
+            // --------------------------------
 
-    formData.append("state",
-        document.getElementById("state").value
-    );
+            const registrationData = {
 
-    formData.append("department",
-        document.getElementById("department").value
-    );
+                fullname:
+                    document.getElementById("fullname").value,
 
-    formData.append("level",
-        document.getElementById("level").value
-    );
+                dateOfBirth:
+                    dateOfBirthText,
 
-    formData.append("school",
-        document.getElementById("school").value
-    );
+                gender:
+                    document.querySelector(
+                        'input[name="gender"]:checked'
+                    ).value,
 
-    // Change button text
-    const submitButton = form.querySelector("button[type='submit']");
-    submitButton.disabled = true;
-    submitButton.textContent = "Submitting...";
+                phone:
+                    document.getElementById("phone").value,
 
-    // Send information to Google Sheets
-    fetch(scriptURL, {
-        method: "POST",
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
+                email:
+                    document.getElementById("email").value,
 
-        if (data.status === "success") {
+                address:
+                    document.getElementById("address").value,
+
+                state:
+                    document.getElementById("state").value,
+
+                department:
+                    document.getElementById("department").value,
+
+                level:
+                    document.getElementById("level").value,
+
+                school:
+                    document.getElementById("school").value,
+
+
+                // PASSPORT
+                passport: {
+
+                    name: passport.name,
+
+                    type: passport.type,
+
+                    data: reader.result
+
+                }
+
+            };
+
+
+            // --------------------------------
+            // BUTTON
+            // --------------------------------
+
+            const submitButton =
+                form.querySelector(
+                    "button[type='submit']"
+                );
+
+
+            submitButton.disabled = true;
+
+            submitButton.textContent =
+                "Uploading...";
+
 
             message.textContent =
-                "Registration submitted successfully!";
+                "Uploading registration and passport...";
 
-            message.style.color = "green";
+            message.style.color = "blue";
 
-            // Reset form
-            form.reset();
 
-        } else {
+            // --------------------------------
+            // SEND TO GOOGLE APPS SCRIPT
+            // --------------------------------
+
+            const response = await fetch(scriptURL, {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+
+                body: JSON.stringify(registrationData)
+
+            });
+
+
+            const data = await response.json();
+
+
+            // --------------------------------
+            // CHECK RESPONSE
+            // --------------------------------
+
+            if (data.status === "success") {
+
+                message.textContent =
+                    "Registration submitted successfully!";
+
+                message.style.color = "green";
+
+
+                // Reset form
+                form.reset();
+
+
+            } else {
+
+                message.textContent =
+                    "Something went wrong: " +
+                    data.message;
+
+                message.style.color = "red";
+
+            }
+
+
+            // --------------------------------
+            // RESET BUTTON
+            // --------------------------------
+
+            submitButton.disabled = false;
+
+            submitButton.textContent =
+                "Register Now";
+
+
+        } catch (error) {
+
+            console.error("Error:", error);
+
 
             message.textContent =
-                "Something went wrong. Please try again.";
+                "Unable to submit registration. Please check your internet connection.";
 
             message.style.color = "red";
+
+
+            const submitButton =
+                form.querySelector(
+                    "button[type='submit']"
+                );
+
+
+            submitButton.disabled = false;
+
+            submitButton.textContent =
+                "Register Now";
+
         }
-    })
-    .catch(error => {
 
-        console.error("Error:", error);
+    };
 
-        message.textContent =
-            "Unable to submit registration. Please check your internet connection.";
 
-        message.style.color = "red";
+    // --------------------------------
+    // READ IMAGE AS BASE64
+    // --------------------------------
 
-    })
-    .finally(() => {
+    reader.readAsDataURL(passport);
 
-        submitButton.disabled = false;
-        submitButton.textContent = "Register Now";
-
-    });
 });
