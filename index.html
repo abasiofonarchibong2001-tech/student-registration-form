@@ -258,22 +258,26 @@
 
 
             <!-- PASSPORT -->
-            <h2>Passport Photograph</h2>
+         <h2>Passport Photograph</h2>
+          <div class="form-group">
 
-            <div class="form-group">
+      <label for="passport">
+            Upload Passport
+      </label>
 
-                <label for="passport">
-                    Upload Passport
-                </label>
+    <input
+        type="file"
+        id="passport"
+        name="passport"
+        accept="image/jpeg,image/png,image/webp"
+        required
+    >
 
-                <input
-                    type="file"
-                    id="passport"
-                    name="passport"
-                    accept="image/*"
-                >
+    <small>
+        Upload a clear passport photograph. Maximum size: 2MB.
+    </small>
 
-            </div>
+</div>
 
 
             <!-- ACCOUNT INFORMATION -->
