@@ -3,7 +3,7 @@ const message = document.getElementById("message");
 
 // GOOGLE APPS SCRIPT WEB APP URL
 const scriptURL =
-    "https://script.google.com/macros/s/AKfycbx0A7j5eOk-f5I6CCARwcs8_Nhno6pNwkiMsD8aA_ZY/exec";
+    "https://script.google.com/macros/s/AKfycbwzzmGn4EI__0j8Wx03kQxOR6e8qh_kU76MGRM1admCh3BcyAUOw_xXmVAsinhG7czI2w/exec";
 
 
 form.addEventListener("submit", async function(event) {
